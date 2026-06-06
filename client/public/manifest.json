@@ -1,6 +1,6 @@
 {
-  "short_name": "Capstone Clock",
-  "name": "Capstone Clock",
+  "short_name": "Time Tracker",
+  "name": "Time Tracker",
   "icons": [
     {
       "src": "icon.svg",

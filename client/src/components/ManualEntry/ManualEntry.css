@@ -1,0 +1,86 @@
+.manual-entry-container {
+  padding: 1rem;
+}
+
+.manual-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.manual-form .btn {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end; /* Align items to the bottom for a cleaner look */
+}
+
+.form-row .form-group {
+  flex: 1; /* Each group takes equal width */
+  min-width: 0; /* Prevent flexbox overflow issues */
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  text-align: left; /* Ensure labels are left-aligned */
+}
+
+.manual-form input,
+.manual-form textarea {
+  padding: 0.8rem;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+  font-size: 1rem;
+  font-family: inherit; /* Ensure consistent font */
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.manual-form textarea {
+  height: 100px;
+  resize: vertical; /* Allow user to resize vertically */
+}
+
+@media (max-width: 768px) {
+  .manual-form input,
+  .manual-form textarea {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .form-row {
+    /* Revert to row layout, adjust gap */
+    gap: 1.5rem; /* Increased gap for better spacing */
+    align-items: flex-start; /* Align items to the top for consistency */
+  }
+
+  .form-row .form-group {
+    /* Keep default flex: 1 behavior for equal sharing of space */
+    /* The input's max-width will control its size */
+    flex: 1;
+    min-width: 0;
+    /* Revert display, flex-direction, align-items from previous attempt */
+  }
+
+  .form-row .form-group label {
+    text-align: left; /* Ensure labels are left-aligned */
+  }
+
+  .form-row .form-group input {
+    max-width: 150px; /* Constrain the width of the input field */
+    /* Removed margin: 0 auto; as we want left alignment for the input within its flex:1 container*/
+  }
+}

@@ -1,37 +1,45 @@
-# ⏱️ Capstone Clock v2
+# Personal Time Tracker
 
-A lightweight, Dockerized time tracker with a React frontend and Node.js backend that syncs with Google Sheets. Designed to be hosted locally and accessed via Tailscale on mobile.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D_18-blue.svg?logo=node.js)](https://nodejs.org/)
+[![Docker](https://img.shields.io/badge/Docker-Supported-blue.svg?logo=docker)](https://www.docker.com/)
 
-This project is a complete rewrite of the original Python-based application, now using a modern JavaScript stack.
+A lightweight, Dockerized general-purpose time clock and hours tracker with a React frontend and Node.js backend that syncs with Google Sheets. Designed to be hosted locally and accessed via Tailscale or other VPN on mobile for personal use.
 
-## 🛠️ Prerequisites: Google Cloud Setup (One-Time)
+<p align="center">
+  <img src="./assets/demo.gif" alt="App demo from iPhone" width="200" />
+</p>
 
-This setup is required to allow the application to connect to your Google Sheet.
+This application helps you track time spent on various tasks, jobs, or personal projects with a modern, simple interface.
 
-### 1. Create Project & Enable APIs
+## Prerequisites: Google Cloud Setup (One-Time)
+
+This setup is required to allow the application to connect to your Google Sheet. Despite setting up through an external provider, it is free.
+
+### A. Create Project & Enable APIs
 
 1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
-2.  Create a new project (e.g., `capstone-tracker`).
+2.  Create a new project (e.g., `time-tracker`).
 3.  **Enable Google Sheets API:**
-    *   Search for "Google Sheets API" or [Click Here](https://console.developers.google.com/apis/api/sheets.googleapis.com/overview).
-    *   Click **ENABLE**.
+    - Search for "Google Sheets API" or [Click Here](https://console.developers.google.com/apis/api/sheets.googleapis.com/overview).
+    - Click **ENABLE**.
 4.  **Enable Google Drive API:**
-    *   Search for "Google Drive API" or [Click Here](https://console.developers.google.com/apis/api/drive.googleapis.com/metrics).
-    *   Click **ENABLE**.
-    *   *Note: This is required for the backend to find and interact with the sheet.*
+    - Search for "Google Drive API" or [Click Here](https://console.developers.google.com/apis/api/drive.googleapis.com/metrics).
+    - Click **ENABLE**.
+    - _Note: This is required for the backend to find and interact with the sheet._
 
-### 2. Create Service Account & Keys
+### B. Create Service Account & Keys
 
 1.  Go to **IAM & Admin** > **Service Accounts**.
 2.  Click **+ CREATE SERVICE ACCOUNT**.
-    *   Name: `tracker-bot` (or similar).
-    *   Click **Done**.
+    - Name: `tracker-bot` (or similar).
+    - Click **Done**.
 3.  Click on the newly created service account's email address.
 4.  Go to the **KEYS** tab.
 5.  Click **ADD KEY** > **Create new key** > **JSON**.
-6.  A JSON file will download. Save it in the root of this project folder. The filename will be long (e.g., `capstone-tracker-xxxxxxxxxxxx.json`).
+6.  A JSON file will download. Save it in the root of this project folder. The filename will be long (e.g., `time-tracker-xxxxxxxxxxxx.json`).
 
-### 3. Share the Sheet
+### C. Share the Sheet
 
 1.  Create a new Google Sheet.
 2.  Click **Share** (top right).
@@ -41,15 +49,18 @@ This setup is required to allow the application to connect to your Google Sheet.
 
 ---
 
-## 🚀 Installation & Usage
+## Installation & Usage
 
-### 1. Configuration (`.env` file)
+### A. Configuration (`.env` file)
 
 Create a file named `.env` in the root of the project and add the following content.
 
 ```ini
 # The full filename of the JSON key file you downloaded
-CREDS_FILE="capstone-tracker-xxxxxxxxxxxx.json"
+CREDS_FILE="time-tracker-xxxxxxxxxxxx.json"
+
+# The name of the tab in your Google Sheet where entries are logged
+G_SHEET_NAME="Hours Tracker"
 
 # The ID of your Google Sheet (from the URL)
 G_SHEET_ID="YOUR_GOOGLE_SHEET_ID_HERE"
@@ -61,51 +72,66 @@ LOCAL_IP=127.0.0.1
 TAILSCALE_IP=100.x.x.x
 ```
 
-### 2. Build the Docker Image
+### B. Build the Docker Image
 
 Open a terminal in the project folder and run:
 
 ```bash
-docker build -t capstone-clock .
+docker build -t time-tracker .
 ```
 
-### 3. Run the Container
+### C. Run the Container
 
 The project includes helper scripts for both bash and PowerShell to run the container.
 
-**Option A: Local Network**
+**Option A: Local-Only Mode**
 
-This makes the app accessible on the host machine at `http://localhost:8501`.
+By default, the container binds only to `127.0.0.1`. This makes the app accessible on the host machine at `http://localhost:8501`.
 
-*   **Bash (Linux/macOS):**
-    ```bash
-    ./run_local.sh
-    ```
-*   **PowerShell (Windows):**
-    ```powershell
-    ./run_local.ps1
-    ```
+- **Bash (Linux/macOS):**
+  ```bash
+  ./run_local.sh
+  ```
+- **PowerShell (Windows):**
+  ```powershell
+  ./run_local.ps1
+  ```
 
-**Option B: Tailscale Only**
+**Option B: Local Network Mode (Phone Access)**
 
-This makes the app accessible *only* via your Tailscale network. This requires `TAILSCALE_IP` to be set to an active IP on your machine.
+To access the app on your local network (e.g. from your phone on the same Wi-Fi) without using Tailscale, pass the network flag. The script automatically detects your machine's local IP address and binds the container to it.
 
-*   **Bash (Linux/macOS):**
-    ```bash
-    ./run_tailscale.sh
-    ```
-*   **PowerShell (Windows):**
-    ```powershell
-    ./run_tailscale.ps1
-    ```
+- **Bash (Linux/macOS):**
+  ```bash
+  ./run_local.sh --network
+  ```
+- **PowerShell (Windows):**
+  ```powershell
+  ./run_local.ps1 -Network
+  ```
+
+**Option C: Tailscale Mode**
+
+This makes the app accessible _only_ via your Tailscale network. This requires `TAILSCALE_IP` to be set to an active IP on your machine.
+
+- **Bash (Linux/macOS):**
+  ```bash
+  ./run_tailscale.sh
+  ```
+- **PowerShell (Windows):**
+  ```powershell
+  ./run_tailscale.ps1
+  ```
 
 ### 4. Accessing the App
 
--   **Computer:** `http://localhost:8501` (if using `run_local`)
--   **Phone (via Tailscale):** `http://<YOUR_TAILSCALE_IP>:8501`
+- **Computer:** `http://localhost:8501` (under Local-Only Mode)
+- **Local Network (e.g., Phone):** `http://<YOUR_DETECTED_IP>:8501` (under Network Mode)
+- **Phone (via Tailscale):** `http://<YOUR_TAILSCALE_IP>:8501` (under Tailscale Mode)
 
 ---
-## 📱 Adding to Your Phone's Home Screen
+
+## Adding to Your Phone's Home Screen
 
 For quick access, you can add the web app to your phone's home screen.
 
@@ -114,7 +140,7 @@ For quick access, you can add the web app to your phone's home screen.
 1.  Open Safari and navigate to the app's URL (e.g., `http://<YOUR_TAILSCALE_IP>:8501`).
 2.  Tap the **Share** button (a square with an arrow pointing up).
 3.  Scroll down and tap **Add to Home Screen**.
-4.  Name the shortcut (e.g., "Clock") and tap **Add**.
+4.  Name the shortcut (e.g., "Time Tracker") and tap **Add**.
 
 ### On Android
 
@@ -125,15 +151,15 @@ For quick access, you can add the web app to your phone's home screen.
 
 ---
 
-## 👨‍💻 Development
+## Development
 
 If you want to run the application locally for development without Docker:
 
-### 1. Prerequisites
+### A. Prerequisites
 
--   [Node.js](https://nodejs.org/) (v18 or later)
+- [Node.js](https://nodejs.org/) (v18 or later)
 
-### 2. Setup
+### B. Setup
 
 1.  **Install Backend Dependencies:**
     ```bash
@@ -149,13 +175,15 @@ If you want to run the application locally for development without Docker:
     ```
 3.  Ensure your `.env` file is configured correctly as described above.
 
-### 3. Running the Dev Servers
+### C. Running the Dev Servers
 
 1.  **Start the Backend Server:**
+
     ```bash
     cd server
     npm start
     ```
+
     The backend will run on `http://localhost:3001`.
 
 2.  **Start the Frontend Dev Server:**

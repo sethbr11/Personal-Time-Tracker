@@ -12,22 +12,29 @@ Get-Content .env | ForEach-Object {
     }
 }
 
-Write-Host "🔒 Starting Capstone Clock on Tailscale ($env:TAILSCALE_IP)..." -ForegroundColor Cyan
+Write-Host "🔒 Starting Time Tracker on Tailscale ($env:TAILSCALE_IP)..." -ForegroundColor Cyan
 
 # Stop existing container
-docker rm -f capstone-clock 2>$null
+$null = docker rm -f time-tracker 2>$null
 
 # Run
 $dockerResult = docker run -d `
   -p "${env:TAILSCALE_IP}:8501:3001" `
-  --name capstone-clock `
+  --name time-tracker `
   -v "${PWD}/${env:CREDS_FILE}:/app/${env:CREDS_FILE}" `
   -v "${PWD}/.env:/app/.env" `
-  capstone-clock
+  time-tracker 2>$null
 
 if ($LASTEXITCODE -eq 0) {
-  Write-Host "✅ Secure! Access at http://${env:TAILSCALE_IP}:8501" -ForegroundColor Green
+    Start-Sleep -Seconds 1
+    $isRunning = docker inspect -f '{{.State.Running}}' time-tracker 2>$null
+    if ($isRunning -eq "true") {
+        Write-Host "✅ Secure! Access at http://${env:TAILSCALE_IP}:8501" -ForegroundColor Green
+    } else {
+        Write-Host "❌ Container started but crashed immediately. Run 'docker logs time-tracker' to debug." -ForegroundColor Red
+        exit 1
+    }
 } else {
-  Write-Host "❌ Failed to start container. Make sure Tailscale is up and running!" -ForegroundColor Red
-  exit 1
+    Write-Host "❌ Failed to start container. Check if the image 'time-tracker' is built ('docker build -t time-tracker .'), Tailscale is up, and port 8501 is free." -ForegroundColor Red
+    exit 1
 }

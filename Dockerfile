@@ -1,10 +1,10 @@
 # Stage 1: Build the React frontend
-FROM node:18-alpine AS build
+FROM node:26-alpine AS build
 
 WORKDIR /app/client
 
 # Copy client package.json and install dependencies
-COPY client/package.json client/package-lock.json ./
+COPY client/package.json ./
 RUN npm install
 
 # Copy the rest of the client app
@@ -14,7 +14,7 @@ COPY client ./
 RUN npm run build
 
 # Stage 2: Create the production image
-FROM node:18-alpine
+FROM node:26-alpine
 
 WORKDIR /app
 
